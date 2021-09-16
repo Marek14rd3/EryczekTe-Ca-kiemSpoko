@@ -1,0 +1,65 @@
+<button id="download-button">Download</button>
+ 
+<a id="save-file">Save File</a>
+ 
+<progress id="progress" value="0"></progress>
+<script>
+    var fileName = "Archive.zip";
+ 
+    document.querySelector('#download-button')
+        .addEventListener('click', function() {
+            request = new XMLHttpRequest();
+            request.responseType = 'blob';
+            request.open('get', fileName, true);
+            request.send();
+ 
+            request.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    var obj = window.URL.createObjectURL(this.response);
+                    document.getElementById('save-file').setAttribute('href', obj);
+ 
+                    document.getElementById('save-file').setAttribute('download', fileName);
+                    setTimeout(function() {
+                        window.URL.revokeObjectURL(obj);
+                    }, 60 * 1000);
+                }
+            };
+    });
+</script>
+<span id="progress-text"></span>
+ 
+<script>
+    var progress = document.getElementById("progress");
+    var progressText = document.getElementById("progress-text");
+ 
+    request.onprogress = function(e) {
+        progress.max = e.total;
+        progress.value = e.loaded;
+ 
+        var percent_complete = (e.loaded / e.total) * 100;
+        percent_complete = Math.floor(percent_complete);
+ 
+        progressText.innerHTML = percent_complete + "%";
+    };
+</script>
+<span id="download-progress-text"></span>
+ 
+<script>
+    var downloadProgressText = document.getElementById("download-progress-text");
+ 
+document.querySelector('#download-button')
+        .addEventListener('click', function() {
+    var startTime = new Date().getTime();
+//// previous code in download button click listener
+});
+ 
+    request.onprogress = function(e) {
+        var duration = ( new Date().getTime() - startTime ) / 1000;
+        var bps = e.loaded / duration;
+        var kbps = bps / 1024;
+        kbps = Math.floor(kbps);
+ 
+        downloadProgressText.innerHTML = kbps + " KB / s";
+    };
+</script>
+<button onclick="request.abort();" type="button">Abort</button>
